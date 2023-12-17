@@ -4,7 +4,8 @@
   "description": "Discord bot made for the Programming discord community",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "echo \"Compiling the source code...\" && tsc && echo \"Starting the bot...\" && node dist/bot/index.js"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,12 @@
   "bugs": {
     "url": "https://github.com/NodBobi/bash-discord-bot/issues"
   },
-  "homepage": "https://github.com/NodBobi/bash-discord-bot#readme"
+  "homepage": "https://github.com/NodBobi/bash-discord-bot#readme",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "discord-api-types": "^0.37.66"
+  }
 }
