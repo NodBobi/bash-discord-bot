@@ -1,14 +1,15 @@
-import { Client, Events, GatewayIntentBits, Collection, REST, Routes } from 'discord.js'
+import { Client, Events, GatewayIntentBits, Collection, REST, Routes, VoiceState } from 'discord.js'
 import * as dotenv from 'dotenv';
 import fs from 'node:fs'
 import path from 'node:path'
 
-dotenv.config({ path: "../../.env" })
+dotenv.config({ path: "/home/luukas/Code/Projects/bash-bot/.env" })
 
 // Extending the base client instance
 declare module "discord.js" {
     interface Client {
         commands: Collection<string, any>
+        categories: String[]
     }
 }
 
@@ -21,6 +22,7 @@ let allCommands: string[] = []
 
 const commandCategoriesPath = path.join(__dirname, "commands")
 const commandCategories = fs.readdirSync(commandCategoriesPath)
+client.categories = commandCategories
 
 // Get all the command categories and commands
 for(const category of commandCategories) {
