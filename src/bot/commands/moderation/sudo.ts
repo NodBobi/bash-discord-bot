@@ -2,29 +2,35 @@ import { SlashCommandBuilder, ChatInputCommandInteraction, Client } from "discor
 
 export = {
     data: new SlashCommandBuilder()
-    .setName("sudo")
-    .setDescription("Command for administrative purposes.")
-    .addSubcommand(subcommand => 
-        subcommand
-        .setName("ban")
-        .setDescription("Ban a member from the server")
-        .addUserOption(option =>
-            option
-            .setName("member")
-            .setDescription("Select a member to ban")
-            .setRequired(true)
-        )
-        .addStringOption(option =>
-            option
-            .setName("flags") 
-            .setDescription("Additional flags to use")   
-        )
-    ),
+        .setName("sudo")
+        .setDescription("Command for administrative purposes.")
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("ban")
+                .setDescription("Ban a member from the server")
+                .addUserOption(option =>
+                    option
+                        .setName("member")
+                        .setDescription("Select a member to ban")
+                        .setRequired(true)
+                )
+                .addStringOption(option =>
+                    option
+                        .setName("flags")
+                        .setDescription("Additional flags to use")
+                )
+        ),
 
-    validFlags: [{
-        flag: ["-y", "--yes"],
-        description: "Override any prompt that the command may ask."
-    }],
+    validFlags: [
+        {
+            flag: ["-y", "--yes"],
+            description: "Override any prompt that the command may ask."
+        },
+        {
+            flag: ["-d", "--duration"],
+            description: "Specify duration of the given punishment"
+        }
+    ],
 
     async execute(interaction: ChatInputCommandInteraction, client: Client) {
         switch (interaction.options.getSubcommand()) {
@@ -33,7 +39,7 @@ export = {
                 const flags = interaction.options.getString("flags")
                 await interaction.reply({ content: `Member to ban: ${targetUser?.id},\nFlags provided: ${flags}`, ephemeral: true })
                 break;
-        
+
             default:
                 break;
         }

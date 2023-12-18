@@ -2,6 +2,7 @@ import { Client, Events, GatewayIntentBits, Collection, REST, Routes, VoiceState
 import * as dotenv from 'dotenv';
 import fs from 'node:fs'
 import path from 'node:path'
+import pkg from '../../package.json'
 import { Logger, IConstructorOptions } from '../utils/logger'
 
 dotenv.config({ path: "/home/luukas/Code/Projects/bash-bot/.env" })
@@ -12,6 +13,7 @@ declare module "discord.js" {
         commands: Collection<string, any>
         categories: String[]
         log: Logger
+        version: string
     }
 }
 
@@ -20,6 +22,9 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 
 // Attach logger to the client instance
 client.log = new Logger({})
+
+// Add client version to the client instance
+client.version = pkg.version
 
 // Add a .commands property to the client instance
 client.commands = new Collection()

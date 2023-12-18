@@ -1,4 +1,5 @@
-import { SlashCommandBuilder, Client, ChatInputCommandInteraction, EmbedBuilder, SlashCommandSubcommandBuilder } from "discord.js";
+import { SlashCommandBuilder, Client, ChatInputCommandInteraction, EmbedBuilder, SlashCommandSubcommandBuilder, EmbedField } from "discord.js";
+import { DiscordEmbed } from "../../../utils/classes/DiscordEmbed";
 
 export = {
     data: new SlashCommandBuilder()
@@ -17,6 +18,8 @@ export = {
         ),
 
     async execute(interaction: ChatInputCommandInteraction, client: Client) {
+
+        // Check if we are looking for subcommand manual
         if (interaction.options.getString("subcommand")) {
             const targetCommand: string = interaction.options.getString("command")!
             const subCommand = interaction.options.getString("subcommand")
@@ -38,10 +41,8 @@ export = {
                 return await interaction.reply({ content: `Hmm, subcommand **${subCommand}** does not exist on command **${targetCommand}**\n` })
             }
 
-            const manualEmbed = new EmbedBuilder()
+            const manualEmbed = new DiscordEmbed(client).embed
                 .setDescription(`\`\`NAME\`\`\n> ${targetCommand} ${foundSubcommand.name}\n\n\`\`DESCRIPTION\`\`\n> ${foundSubcommand.description}\n`)
-                .setFooter({ text: `Requested by ${interaction.user.displayName}`, iconURL: interaction.user.displayAvatarURL() })
-                .setTimestamp()
 
             return await interaction.reply({ embeds: [manualEmbed] })
         }
@@ -53,6 +54,8 @@ export = {
         })
 
         const command = client.commands.get(targetCommand)
+        console.log("Command: ", command)
+
         let commandSubCommands: string[] = []
 
         command.data.options.forEach((option: any) => {
@@ -61,12 +64,18 @@ export = {
             }
         })
 
-        const manualEmbed = new EmbedBuilder()
-            .setDescription(`\`\`NAME\`\`\n> ${command.data.name}\n\n\`\`DESCRIPTION\`\`\n> ${command.data.description}\n\n${commandSubCommands.length > 0 ? `\`\`SUBCOMMANDS\`\`\n> ${commandSubCommands.join(",")}\n` : ""}`)
-            .setFooter({ text: `Requested by ${interaction.user.displayName}`, iconURL: interaction.user.displayAvatarURL() })
-            .setTimestamp()
+        let fieldsArray: EmbedField[] = []
 
-        console.log(client.commands.get(targetCommand).data.options)
+        if (command.validFlags) {
+            command.validFlags.forEach((flag: any) => {
+                fieldsArray.push({ name: `\`\`${flag.flag}\`\``, value: `> ${flag.description}`, inline: true })
+            })
+        }
+
+        const manualEmbed = new DiscordEmbed(client).embed
+            .setDescription(`\`\`NAME\`\`\n> ${command.data.name}\n\n\`\`DESCRIPTION\`\`\n> ${command.data.description}\n\n${commandSubCommands.length > 0 ? `\`\`SUBCOMMANDS\`\`\n> ${commandSubCommands.join(",")}\n:bulb: **TIP**: \`\`/man <command_name> [subcommand_name]\`\` for subcommand manual` : ""}${command.validFlags ? "\n\n**__FLAGS__**" : ""}`)
+            .addFields(...fieldsArray)
+
         await interaction.reply({ embeds: [manualEmbed] })
     }
 }
