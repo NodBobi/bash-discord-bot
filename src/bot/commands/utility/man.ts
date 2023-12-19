@@ -49,14 +49,36 @@ export = {
                 }
             })[0]
 
-            console.log(foundSubcommand)
-
             if (!foundSubcommand) {
                 return await interaction.reply({ content: `Hmm, subcommand **${subCommand}** does not exist on command **${targetCommand}**\n` })
             }
 
+            let fieldsArray: EmbedField[] = []
+
+            /* 
+            Get the SlashCommandSubcommandBuilder options. The first index of the commandOptions is going to be 
+            SlashCommandSubcommandBuilder so we get its options with commandOptions[0].options
+            */
+            if(commandOptions[0].options) {
+                fieldsArray.push({
+                    name: "**__OPTIONS__**",
+                    value: "All the options the subcommand has and info about them.",
+                    inline: false
+                })
+
+                commandOptions[0].options.forEach((option: any) => {
+                    if(option instanceof SlashCommandSubcommandBuilder) return;
+                    fieldsArray.push({
+                        name: `\`\`${option.name}\`\``,
+                        value: `> **Description**: ${option.description}\n> **Type**: \`\`${applicationCommandOptionTypes[option.type]}\`\`\n > **Required**: \`\`${option.required}\`\`\n`,
+                        inline: true,
+                    })
+                })
+            }
+
             const manualEmbed = new DiscordEmbed(client).embed
                 .setDescription(`\`\`NAME\`\`\n> ${targetCommand} ${foundSubcommand.name}\n\n\`\`DESCRIPTION\`\`\n> ${foundSubcommand.description}\n`)
+                .setFields(...fieldsArray)
 
             return await interaction.reply({ embeds: [manualEmbed] })
         }
@@ -85,6 +107,7 @@ export = {
                 value: "All the options the command has and info about them.",
                 inline: false
             })
+
             command.data.options.forEach((option: any) => {
                 if(option instanceof SlashCommandSubcommandBuilder) return;
                 fieldsArray.push({
@@ -109,6 +132,7 @@ export = {
                 value: "Additional flags that the command may take",
                 inline: false
             })
+
             command.validFlags.forEach((flag: IFlag) => {
                 fieldsArray.push({ name: `\`\`${flag.flag}\`\``, value: `> ${flag.description}`, inline: true })
             })

@@ -43,7 +43,7 @@ export = {
         ),
 
     async execute(interaction: ChatInputCommandInteraction, client: Client) {
-        const language = interaction.options.getString("language")!
+        const language: string = interaction.options.getString("language")!
 
         const askSourceCodeModal = new ModalBuilder()
         .setCustomId("sourceCodeModal")
@@ -67,7 +67,7 @@ export = {
                 const formattedCode = languages[language].parser ? await prettier.format(`${submit.fields.getField("sourceCodeInput").value}`, { semi: false, parser: languages[language].parser! }) : submit.fields.getField("sourceCodeInput").value
 
                 const codeBlockReplyEmbed = new DiscordEmbed(client).embed
-                .setDescription(`\`\`\`diff\n+ HERE'S THE CODE. COPY IT FROM THE TOP RIGHT CORNER  \`\`\`\n\n\`\`\`${language}\n${formattedCode}\`\`\``)
+                .setDescription(`\`\`\`diff\n+ HERE'S THE CODE. COPY IT FROM THE TOP RIGHT CORNER \`\`\`\n${languages[language].parser ? "" : `> **NOTE**: Your code isn't formatted as i do not have a parser for ${language}\n`}\`\`\`${language}\n${formattedCode}\`\`\``)
                 .setColor("Green")
 
                 await submit.reply({ embeds: [codeBlockReplyEmbed] })
