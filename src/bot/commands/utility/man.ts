@@ -1,6 +1,20 @@
 import { SlashCommandBuilder, Client, ChatInputCommandInteraction, EmbedBuilder, SlashCommandSubcommandBuilder, EmbedField } from "discord.js";
 import { DiscordEmbed } from "../../../utils/classes/DiscordEmbed";
 
+const applicationCommandOptionTypes: any = {
+    1: "subcommand",
+    2: "subcommandgroup",
+    3: "string",
+    4: "integer",
+    5: "boolean",
+    6: "user",
+    7: "channel/category",
+    8: "role",
+    9: "mentionable",
+    10: "number",
+    11: "attachment",
+}
+
 export = {
     data: new SlashCommandBuilder()
         .setName("man")
@@ -54,7 +68,6 @@ export = {
         })
 
         const command = client.commands.get(targetCommand)
-        console.log("Command: ", command)
 
         let commandSubCommands: string[] = []
 
@@ -66,14 +79,43 @@ export = {
 
         let fieldsArray: EmbedField[] = []
 
+        if(command.data.options) {
+            fieldsArray.push({
+                name: "**__OPTIONS__**",
+                value: "All the options the command has and info about them.",
+                inline: false
+            })
+            command.data.options.forEach((option: any) => {
+                if(option instanceof SlashCommandSubcommandBuilder) return;
+                fieldsArray.push({
+                    name: `\`\`${option.name}\`\``,
+                    value: `> **Description**: ${option.description}\n> **Type**: \`\`${applicationCommandOptionTypes[option.type]}\`\`\n > **Required**: \`\`${option.required}\`\`\n`,
+                    inline: true,
+                })
+            })
+        }
+
+        if(command.permissions) {
+            fieldsArray.push({
+                name: "``REQUIRED PERMISSIONS``",
+                value: `\`\`\`hs\n${command.permissions.join(", ")}\`\`\``,
+                inline: false,
+            })
+        }
+
         if (command.validFlags) {
+            fieldsArray.push({
+                name: "\n\n**__FLAGS__**",
+                value: "Additional flags that the command may take",
+                inline: false
+            })
             command.validFlags.forEach((flag: any) => {
                 fieldsArray.push({ name: `\`\`${flag.flag}\`\``, value: `> ${flag.description}`, inline: true })
             })
         }
 
         const manualEmbed = new DiscordEmbed(client).embed
-            .setDescription(`\`\`NAME\`\`\n> ${command.data.name}\n\n\`\`DESCRIPTION\`\`\n> ${command.data.description}\n\n${commandSubCommands.length > 0 ? `\`\`SUBCOMMANDS\`\`\n> ${commandSubCommands.join(",")}\n:bulb: **TIP**: \`\`/man <command_name> [subcommand_name]\`\` for subcommand manual` : ""}${command.validFlags ? "\n\n**__FLAGS__**" : ""}`)
+            .setDescription(`\`\`NAME\`\`\n> ${command.data.name}\n\n\`\`DESCRIPTION\`\`\n> ${command.data.description}\n\n${commandSubCommands.length > 0 ? `\`\`SUBCOMMANDS\`\`\n> ${commandSubCommands.join(",")}\n:bulb: **TIP**: \`\`/man <command_name> [subcommand_name]\`\` for subcommand manual\n\n` : ""}`)
             .addFields(...fieldsArray)
 
         await interaction.reply({ embeds: [manualEmbed] })
