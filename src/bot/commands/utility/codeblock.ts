@@ -2,7 +2,11 @@ import { Client, ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandS
 import { DiscordEmbed } from "../../../utils/classes/DiscordEmbed";
 import * as prettier from 'prettier'
 
-const languages: any = {
+interface Languages {
+    [language: string]: { parser: string | null, name: string }
+}
+
+const languages: Languages = {
     javascript: { parser: "flow", name: "javascript" },
     typescript: { parser: "typescript", name: "typescript" },
     python: { parser: null, name: "python (formatting not available)" },
@@ -19,7 +23,7 @@ const languages: any = {
     markdown: { parser: "markdown", name: "markdown" },
 }
 
-const languageData: any = Object.keys(languages).map((value) => {
+const languageData: { name: string, value: string }[] = Object.keys(languages).map((value) => {
     return {
         name: languages[value].name,
         value
@@ -60,7 +64,7 @@ export = {
         try {
             const submit = await interaction.awaitModalSubmit({ filter: (interaction) => interaction.customId === "sourceCodeModal", time: 120000 })
             try {
-                const formattedCode = languages[language].parser ? await prettier.format(`${submit.fields.getField("sourceCodeInput").value}`, { semi: false, parser: languages[language].parser }) : submit.fields.getField("sourceCodeInput").value
+                const formattedCode = languages[language].parser ? await prettier.format(`${submit.fields.getField("sourceCodeInput").value}`, { semi: false, parser: languages[language].parser! }) : submit.fields.getField("sourceCodeInput").value
 
                 const codeBlockReplyEmbed = new DiscordEmbed(client).embed
                 .setDescription(`\`\`\`diff\n+ HERE'S THE CODE. COPY IT FROM THE TOP RIGHT CORNER  \`\`\`\n\n\`\`\`${language}\n${formattedCode}\`\`\``)

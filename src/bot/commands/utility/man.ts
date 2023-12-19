@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, Client, ChatInputCommandInteraction, EmbedBuilder, SlashCommandSubcommandBuilder, EmbedField } from "discord.js";
+import { SlashCommandBuilder, Client, ChatInputCommandInteraction, EmbedBuilder, SlashCommandSubcommandBuilder, EmbedField, Options } from "discord.js";
 import { DiscordEmbed } from "../../../utils/classes/DiscordEmbed";
 
 const applicationCommandOptionTypes: any = {
@@ -43,7 +43,7 @@ export = {
             })
 
             const commandOptions = client.commands.get(targetCommand).data.options
-            const foundSubcommand = commandOptions.filter((option: SlashCommandSubcommandBuilder | any) => {
+            const foundSubcommand = commandOptions.filter((option: SlashCommandSubcommandBuilder) => {
                 if (option instanceof SlashCommandSubcommandBuilder && option.name === subCommand) {
                     return option
                 }
@@ -71,7 +71,7 @@ export = {
 
         let commandSubCommands: string[] = []
 
-        command.data.options.forEach((option: any) => {
+        command.data.options.forEach((option: Options) => {
             if (option instanceof SlashCommandSubcommandBuilder) {
                 commandSubCommands.push(option.name)
             }
@@ -109,7 +109,7 @@ export = {
                 value: "Additional flags that the command may take",
                 inline: false
             })
-            command.validFlags.forEach((flag: any) => {
+            command.validFlags.forEach((flag: IFlag) => {
                 fieldsArray.push({ name: `\`\`${flag.flag}\`\``, value: `> ${flag.description}`, inline: true })
             })
         }
