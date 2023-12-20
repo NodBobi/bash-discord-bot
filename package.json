@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "echo \"Compiling the source code...\" && tsc --watch && echo \"Starting the bot...\" && node dist/bot/index.js",
-    "start": "echo \"Compiling the source code...\" && tsc && echo \"Starting the bot...\" && node dist/bot/index.js"
+    "start": "echo \"Compiling the source code...\" && tsc --pretty && echo \"Starting the bot...\" && node dist/bot/index.js"
   },
   "repository": {
     "type": "git",
@@ -25,9 +25,11 @@
     "colors": "^1.4.0",
     "discord.js": "^14.14.1",
     "dotenv": "^16.3.1",
+    "ping": "^0.4.4",
     "prettier": "^3.1.1"
   },
   "devDependencies": {
+    "@types/ping": "^0.4.4",
     "discord-api-types": "^0.37.66"
   }
 }
