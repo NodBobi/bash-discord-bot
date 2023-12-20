@@ -59,7 +59,7 @@ export = {
             Get the SlashCommandSubcommandBuilder options. The first index of the commandOptions is going to be 
             SlashCommandSubcommandBuilder so we get its options with commandOptions[0].options
             */
-            if(commandOptions[0].options) {
+            if (commandOptions[0].options) {
                 fieldsArray.push({
                     name: "**__OPTIONS__**",
                     value: "All the options the subcommand has and info about them.",
@@ -67,7 +67,7 @@ export = {
                 })
 
                 commandOptions[0].options.forEach((option: any) => {
-                    if(option instanceof SlashCommandSubcommandBuilder) return;
+                    if (option instanceof SlashCommandSubcommandBuilder) return;
                     fieldsArray.push({
                         name: `\`\`${option.name}\`\``,
                         value: `> **Description**: ${option.description}\n> **Type**: \`\`${applicationCommandOptionTypes[option.type]}\`\`\n > **Required**: \`\`${option.required}\`\`\n`,
@@ -101,7 +101,7 @@ export = {
 
         let fieldsArray: EmbedField[] = []
 
-        if(command.data.options) {
+        if (command.data.options) {
             fieldsArray.push({
                 name: "**__OPTIONS__**",
                 value: "All the options the command has and info about them.",
@@ -109,7 +109,7 @@ export = {
             })
 
             command.data.options.forEach((option: any) => {
-                if(option instanceof SlashCommandSubcommandBuilder) return;
+                if (option instanceof SlashCommandSubcommandBuilder) return;
                 fieldsArray.push({
                     name: `\`\`${option.name}\`\``,
                     value: `> **Description**: ${option.description}\n> **Type**: \`\`${applicationCommandOptionTypes[option.type]}\`\`\n > **Required**: \`\`${option.required}\`\`\n`,
@@ -118,7 +118,7 @@ export = {
             })
         }
 
-        if(command.permissions) {
+        if (command.permissions) {
             fieldsArray.push({
                 name: "``REQUIRED PERMISSIONS``",
                 value: `\`\`\`hs\n${command.permissions.join(", ")}\`\`\``,
