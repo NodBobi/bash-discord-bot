@@ -26,7 +26,7 @@ export = {
             if (res.alive) {
                 const pingStatEmbed = new DiscordEmbed(client).embed
                     .setDescription(`\`\`\`diff\n+ HOST ${res.host} (${res.numeric_host})\`\`\``)
-                    .setFields({ name: "**__PING STATS__**", value: `> Packets sent: \`\`${res.times.length}\`\`\n> Times: \`\`${res.times}\`\`\n > Min: \`\`${res.min}ms\`\`\n > Max: \`\`${res.max}\`\`\n > Avg: \`\`${res.avg}\`\`\n> Packet loss: \`\`${res.packetLoss}%\`\`` })
+                    .setFields({ name: "**__RESULTS__**", value: `> Packets sent: \`\`${res.times.length}\`\`\n> Times: \`\`${res.times}\`\`\n > Min: \`\`${res.min}ms\`\`\n > Max: \`\`${res.max}\`\`\n > Avg: \`\`${res.avg}\`\`\n> Packet loss: \`\`${res.packetLoss}%\`\`` })
                     .setColor("Green")
                 return await deferred.edit({ embeds: [pingStatEmbed] })
             }
