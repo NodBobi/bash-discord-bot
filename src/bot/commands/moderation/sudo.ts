@@ -39,7 +39,7 @@ export = {
         {
             flag: ["-y", "--yes"],
             parsedFlag: ["y", "yes"],
-            description: "Override any prompt that the command may ask.",
+            description: "Override any prompt that the command may ask as a yes or truthy value.",
         },
         {
             flag: ["-d", "--duration"],
@@ -59,7 +59,7 @@ export = {
                 const action = interaction.options.getString("action")
                 const targetUser = interaction.options.getUser('member')
                 const flags = interaction.options.getString("flags")
-            
+
                 switch (action) {
                     case "sudo_mod_ban":
                         let banData = {}
@@ -71,6 +71,7 @@ export = {
                         if(flags) {
                             console.log("ALL THE FLAGS", flags)
                             const parsedFlags = flags.split("-").join("").trim().split(" ")
+                            console.log("PARSED FLAGS:", parsedFlags)
                         }
 
                         const confirmBanEmbed = new DiscordEmbed(client).embed

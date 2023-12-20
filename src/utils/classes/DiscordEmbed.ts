@@ -1,5 +1,8 @@
 /*
-    Embed builder to add all the static fields that do not change
+    Embed builder to add all the static fields that do not change.
+    TODO:
+    - Add pre built themes, such as: "success", "warn", "danger" etc.
+    - Add options object to the constructor arguments, maybe like: { style: "danger" }
 */
 
 import { Client, EmbedBuilder } from 'discord.js'

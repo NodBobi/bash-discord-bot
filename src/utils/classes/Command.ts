@@ -1,3 +1,8 @@
+/*
+    TODO:
+    - Make this class
+*/
+
 export interface ICommandOptions {
 
 }
