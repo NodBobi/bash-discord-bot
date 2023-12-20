@@ -46,16 +46,16 @@ export = {
         const language: string = interaction.options.getString("language")!
 
         const askSourceCodeModal = new ModalBuilder()
-        .setCustomId("sourceCodeModal")
-        .setTitle("Code block builder")
+            .setCustomId("sourceCodeModal")
+            .setTitle("Code block builder")
 
         const sourceCodeTextField = new TextInputBuilder()
-        .setValue("")
-        .setMaxLength(2000)
-        .setCustomId("sourceCodeInput")
-        .setLabel(`Paste your ${language} source code here`)
-        .setStyle(TextInputStyle.Paragraph)
-        .setRequired(true)
+            .setValue("")
+            .setMaxLength(2000)
+            .setCustomId("sourceCodeInput")
+            .setLabel(`Paste your ${language} source code here`)
+            .setStyle(TextInputStyle.Paragraph)
+            .setRequired(true)
 
         const actionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(sourceCodeTextField)
         askSourceCodeModal.addComponents(actionRow)
@@ -67,20 +67,20 @@ export = {
                 const formattedCode = languages[language].parser ? await prettier.format(`${submit.fields.getField("sourceCodeInput").value}`, { semi: false, parser: languages[language].parser! }) : submit.fields.getField("sourceCodeInput").value
 
                 const codeBlockReplyEmbed = new DiscordEmbed(client).embed
-                .setDescription(`\`\`\`diff\n+ HERE'S THE CODE. COPY IT FROM THE TOP RIGHT CORNER \`\`\`\n${languages[language].parser ? "" : `> **NOTE**: Your code isn't formatted as i do not have a parser for ${language}\n`}\`\`\`${language}\n${formattedCode}\`\`\``)
-                .setColor("Green")
+                    .setDescription(`\`\`\`diff\n+ HERE'S THE CODE. COPY IT FROM THE TOP RIGHT CORNER \`\`\`\n${languages[language].parser ? "" : `> :warning: Your code isn't formatted as i do not have a parser for ${language}\n`}\`\`\`${language}\n${formattedCode}\`\`\``)
+                    .setColor("Green")
 
                 await submit.reply({ embeds: [codeBlockReplyEmbed] })
             } catch (error) {
                 const codeParsingErrorEmbed = new DiscordEmbed(client).embed
-                .setDescription(`\`\`\`diff\n- SNIPPER PARSING ERROR\`\`\`\n> **There was an error while parsing your code snippet.**\n> Check your code is formatted correctly, because the code parser could not parse your code.\n\`\`\`${error}\`\`\``)
-                .setColor("Red")
+                    .setDescription(`\`\`\`diff\n- SNIPPER PARSING ERROR\`\`\`\n> **There was an error while parsing your code snippet.**\n> Check your code is formatted correctly, because the code parser could not parse your code.\n\`\`\`${error}\`\`\``)
+                    .setColor("Red")
                 return await submit.reply({ embeds: [codeParsingErrorEmbed] })
             }
         } catch (error) {
             const errorEmbed = new DiscordEmbed(client).embed
-            .setDescription(`\`\`\`diff\n- INTERACTION TIMEOUT\`\`\`\n> <@${interaction.user.id}> where did you go? You never echoed back. I guess you found something better to do?\n`)
-            .setColor("Red")
+                .setDescription(`\`\`\`diff\n- INTERACTION TIMEOUT\`\`\`\n> <@${interaction.user.id}> where did you go? You never echoed back. I guess you found something better to do?\n`)
+                .setColor("Red")
             return await interaction.followUp({ embeds: [errorEmbed] })
         }
     }

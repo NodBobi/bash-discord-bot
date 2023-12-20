@@ -70,13 +70,19 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 })
 
-// Registering all the commands:
+// Registering all the commands to the guild:
 const rest = new REST().setToken(process.env.DISCORD_BOT_TOKEN!)
 const guildId: string = process.env.DISCORD_GUILD_ID!
 const clientId: string = process.env.DISCORD_CLIENT_ID!
 const deployCommands = async () => {
     try {
         client.log.info(`Reloading ${allCommands.length} commands...`)
+
+        /*
+        This will reload all the commands in the guild mentioned in the guildId parameter.
+        It will make a PUT reques to discords API, something like: https://discord.com/api/v10/applications/:applicationID/commands/:guildID
+        The REST is just a helper class to get easiner interaction with the discord api.
+        */
         const data: any = await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: allCommands })
         client.log.info(`Succesfully reloaded ${data.length} commands!`)
     } catch (error) {
