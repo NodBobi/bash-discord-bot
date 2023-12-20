@@ -1,4 +1,4 @@
-import { Client, ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandStringOption, ModalBuilder, TextInputBuilder, ActionRowBuilder, ModalActionRowComponentBuilder, TextInputStyle } from "discord.js";
+import { Client, ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandStringOption, ModalBuilder, TextInputBuilder, ActionRowBuilder, ModalActionRowComponentBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } from "discord.js";
 import { DiscordEmbed } from "../../../utils/classes/DiscordEmbed";
 import * as prettier from 'prettier'
 
@@ -74,7 +74,34 @@ export = {
                     .setDescription(`\`\`\`diff\n+ HERE'S THE CODE. COPY IT FROM THE TOP RIGHT CORNER \`\`\`\n${languages[language].parser ? "" : `> :warning: Your code isn't formatted as i do not have a parser for ${language}\n`}\`\`\`${language}\n${formattedCode}\`\`\``)
                     .setColor("Green")
 
-                await submit.reply({ embeds: [codeBlockReplyEmbed] })
+                const hideEmbedButton = new ButtonBuilder()
+                    .setCustomId("codeblock_hide_embed_button")
+                    .setLabel("Hide embed")
+                    .setStyle(ButtonStyle.Secondary)
+
+                const actionRow = new ActionRowBuilder<ButtonBuilder>()
+                    .addComponents(hideEmbedButton)
+
+                const reply = await submit.reply({ embeds: [codeBlockReplyEmbed], components: [actionRow] })
+
+                try {
+                    /*
+                    We're waiting for any interaction to components attached in to the embed, if there
+                     is no interaction within 60secs the promise will be rejected. If there is interaction, 
+                     the promise will be resolved and the result will be assigned in to the componentInteraction
+                     variable
+                    */
+                    const componentInteraction = await reply.awaitMessageComponent({ time: 60000 })
+                    console.log("received interaction", componentInteraction)
+                    if (componentInteraction.customId === "codeblock_hide_embed_button") {
+                        console.log("Button clicked")
+                        submit.editReply({ content: `\`\`\`${language}\n${formattedCode}\`\`\``, embeds: [], components: [] })
+                    }
+                    console.log("In bottom of the try catch loop")
+                } catch (error) {
+                    // Interaction timeout will be catched here (the user did not respond or click on the button)
+                    client.log.error(`Error while receiving interaction: ${error}`)
+                }
             } catch (error) {
                 const codeParsingErrorEmbed = new DiscordEmbed(client).embed
                     .setDescription(`\`\`\`diff\n- SNIPPER PARSING ERROR\`\`\`\n> **There was an error while parsing your code snippet.**\n> Check your code is formatted correctly, because the code parser could not parse your code.\n\`\`\`${error}\`\`\``)
