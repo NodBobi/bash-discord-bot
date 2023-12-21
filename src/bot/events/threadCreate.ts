@@ -7,7 +7,7 @@ export = {
     once: false,
     async execute(client: Client, args: any) {
         const [ channel ]: [ ThreadChannel ] = args
-        
+
         // Check if the channel is thread and that the parentID is the forum channel id
         if (channel.isThread() && channel.parentId === "1187300552393113641") {
             try {
