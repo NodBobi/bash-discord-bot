@@ -1,5 +1,6 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, Client, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
+import { SlashCommandBuilder, ChatInputCommandInteraction, Client, ButtonBuilder, ButtonStyle, ActionRowBuilder, ButtonInteraction, DiscordAPIError } from "discord.js";
 import { DiscordEmbed } from "../../../utils/classes/DiscordEmbed";
+import { Button } from "../../../utils/classes/Button";
 
 export = {
     data: new SlashCommandBuilder()
@@ -57,7 +58,7 @@ export = {
         switch (interaction.options.getSubcommand()) {
             case "mod":
                 const action = interaction.options.getString("action")
-                const targetUser = interaction.options.getUser('member')
+                const targetUser = interaction.options.getUser('member')!
                 const flags = interaction.options.getString("flags")
 
                 switch (action) {
@@ -65,8 +66,8 @@ export = {
                         let banData = {}
 
                         if (!interaction.memberPermissions?.has("BanMembers")) return await interaction.reply({ content: "``Permission denied``, you need to have **BAN_MEMBERS** permissions." })
-                        if (interaction.user.id === targetUser!.id) return await interaction.reply({ content: "Why'd you want to ban yourself? Lets not do that." })
-                        //if(targetUser?.id === client.user?.id) return await interaction.reply({ content: "You can't ban me lol." })
+                        if (interaction.user.id === targetUser.id) return await interaction.reply({ content: "I'm not going to ban you as long as you're trying to do it yourself. Nice try tho." })
+                        if (targetUser.id === client!.user!.id) return await interaction.reply({ content: "You want to remove me, huh? I cannot ban myself sadly." })
 
                         if(flags) {
                             console.log("ALL THE FLAGS", flags)
@@ -78,44 +79,39 @@ export = {
                             .setDescription(`\`\`\`diff\n- CONFIRM YOUR ACTION\`\`\`\n> You are about to ban user <@${targetUser?.id}>\n\`\`\`hs\nDO YOU WANT TO BAN THIS USER?  \`\`\``)
                             .setColor("Yellow")
 
-                        const confirmButton = new ButtonBuilder()
-                            .setLabel("CONFIRM BAN")
-                            .setStyle(ButtonStyle.Danger)
-                            .setCustomId("sudo_mod_ban_confirm")
 
-                        const cancelButton = new ButtonBuilder()
-                            .setLabel("CANCEL")
-                            .setStyle(ButtonStyle.Secondary)
-                            .setCustomId("sudo_mod_ban_cancel")
+                        const confirmBanButton = new Button(client, {
+                            id: "sudo_mod_confirm_ban_button",
+                            text: "BAN USER",
+                            style: ButtonStyle.Danger,
+                            onInteraction: async function(client: Client, buttonInteraction: ButtonInteraction) {
+                                try {
+                                    if(interaction.user.id !== buttonInteraction.user.id) return;
+                                    await interaction.guild?.bans.create(`${targetUser?.id}`)   
+                                } catch (error) {
+                                    console.log(error)
+                                    await interaction.editReply({ content: `Well something went horribly wrong here\nERROR: ${error}`, embeds: [], components: [] })
+                                }
+                            }
+                        })
+
+                        const cancelBanButton = new Button(client, {
+                            id: "sudo_mod_ccancel_ban_button",
+                            text: "CANCEL",
+                            style: ButtonStyle.Secondary,
+                            onInteraction: async function(client: Client, buttonInteraction: ButtonInteraction) {
+                                try {
+                                    interaction.editReply({ content: "Ban cancelled, no action was taken. Let peace be with us.", embeds: [], components: [] })
+                                } catch (error) {
+                                    await interaction.editReply({ content: `Well something went horribly wrong here\nERROR: ${error}`, embeds: [], components: [] })
+                                }
+                            }
+                        })
 
                         const buttonRow = new ActionRowBuilder<ButtonBuilder>()
-                            .addComponents(confirmButton, cancelButton)
+                            .addComponents(confirmBanButton.button, cancelBanButton.button)
 
-                        const reply = await interaction.reply({ embeds: [confirmBanEmbed], components: [buttonRow] })
-
-                        const responseCollectionFilter = (i: any) => i.user.id === interaction.user.id
-                        try {
-                            const confirmation = await reply.awaitMessageComponent({ filter: responseCollectionFilter, time: 10_000 })
-
-                            if (confirmation.customId === "sudo_mod_ban_confirm") {
-                                client.log.info(`${targetUser?.displayName} will was banned from the guild`)
-
-                                const banSuccessEmbed = new DiscordEmbed(client).embed
-                                    .setColor("Green")
-                                    .setDescription(`\`\`\`diff\n+ Member banned!\`\`\`\n> \`\`MODERATOR:\`\` <@${interaction.user.id}>\n> \`\`TARGET:\`\` <@${targetUser?.id}>\n> \`\`TIMESTAMP:\`\`<t:${Math.floor(Date.now() / 1000)}:F>`)
-                                await confirmation.update({ embeds: [banSuccessEmbed], components: [] })
-                            } else if (confirmation.customId === "sudo_mod_ban_cancel") {
-                                const banCancelledEmbed = new DiscordEmbed(client).embed
-                                    .setColor("Red")
-                                    .setDescription('```diff\n- ACTION CANCELLED!```\n> Successfully cancelled, no action was taken.')
-                                await confirmation.update({ embeds: [banCancelledEmbed], components: [] })
-                            }
-                        } catch (error) {
-                            const interactionTimeoutEmbed = new DiscordEmbed(client).embed
-                            .setDescription(`\`\`\`diff\n- INTERACTION TIMEOUT\`\`\`\n> <@${interaction.user.id}> where did you go? You never echoed back. I guess you found something better to do?\n`)
-                            .setColor("Red")
-                            await interaction.editReply({ embeds: [interactionTimeoutEmbed], components: [] })
-                        }
+                        await interaction.reply({ embeds: [confirmBanEmbed], components: [buttonRow] })
                     default:
                         break;
                 }
