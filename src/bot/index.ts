@@ -1,9 +1,17 @@
-import { Client, Events, GatewayIntentBits, Collection, REST, Routes, VoiceState } from 'discord.js'
+/*
+    TODO:
+    - Make a button handler class to handle button interactions.
+*/
+
+
+import { Client, Events, GatewayIntentBits, Collection, REST, Routes, VoiceState, Channel, ThreadChannel, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, GuildMember } from 'discord.js'
 import * as dotenv from 'dotenv';
 import fs from 'node:fs'
 import path from 'node:path'
 import pkg from '../../package.json'
 import { Logger, IConstructorOptions } from '../utils/logger'
+import { DiscordEmbed } from '../utils/classes/DiscordEmbed';
+import { Button } from '../utils/classes/Button';
 
 dotenv.config({ path: "/home/luukas/Code/Projects/bash-bot/.env" })
 
@@ -13,7 +21,8 @@ declare module "discord.js" {
         commands: Collection<string, any>
         categories: String[]
         log: Logger
-        version: string
+        version: string,
+        buttons: Map<string, Button>
     }
 }
 
@@ -25,6 +34,9 @@ client.log = new Logger({})
 
 // Add client version to the client instance
 client.version = pkg.version
+
+// Add a map for each button to the client instance
+client.buttons = new Map()
 
 // Add a .commands property to the client instance
 client.commands = new Collection()
@@ -50,7 +62,26 @@ for (const category of commandCategories) {
     }
 }
 
-// Handle the command execution
+// Handle events from events folder:
+const eventsFolder = fs.readdirSync(`${__dirname}/events/`)
+for (const eventFile of eventsFolder) {
+    if (eventFile.endsWith(".js")) {
+        const eventFilePath = `${__dirname}/events/${eventFile}`
+        const event = require(`${__dirname}/events/${eventFile}`)
+        if ('once' in event && 'type' in event && 'execute' in event) {
+            client.log.info(`Registering event: ${event.type}`)
+            if (event.once) {
+                client.once(event.type, (...args) => event.execute(client, args))
+            } else {
+                client.on(event.type, (...args) => event.execute(client, args))
+            }
+        } else {
+            client.log.warn(`Some required fields are missing from ${eventFilePath}`)
+        }
+    }
+}
+
+// Handle the interactions
 client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
