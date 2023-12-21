@@ -1,6 +1,7 @@
-import { Client, ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandStringOption, ModalBuilder, TextInputBuilder, ActionRowBuilder, ModalActionRowComponentBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } from "discord.js";
+import { Client, ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandStringOption, ModalBuilder, TextInputBuilder, ActionRowBuilder, ModalActionRowComponentBuilder, TextInputStyle, ButtonBuilder, ButtonStyle, ButtonInteraction } from "discord.js";
 import { DiscordEmbed } from "../../../utils/classes/DiscordEmbed";
 import * as prettier from 'prettier'
+import { Button } from "../../../utils/classes/Button";
 
 interface Languages {
     [language: string]: { parser: string | null, name: string }
@@ -74,13 +75,22 @@ export = {
                     .setDescription(`\`\`\`diff\n+ HERE'S THE CODE. COPY IT FROM THE TOP RIGHT CORNER \`\`\`\n${languages[language].parser ? "" : `> :warning: Your code isn't formatted as i do not have a parser for ${language}\n`}\`\`\`${language}\n${formattedCode}\`\`\``)
                     .setColor("Green")
 
-                const hideEmbedButton = new ButtonBuilder()
-                    .setCustomId("codeblock_hide_embed_button")
-                    .setLabel("Hide embed")
-                    .setStyle(ButtonStyle.Secondary)
+                const hideEmbedButton = new Button(client, {
+                    id: "codeblock_hide_embed_button",
+                    style: ButtonStyle.Secondary,
+                    text: "Hide embed",
+                    onInteraction: async function(client: Client, buttonInteraction: ButtonInteraction) {
+                        try {
+                            await reply.edit({ content: `\`\`\`${language}\n${formattedCode}\`\`\``, components: [], embeds: [] })
+                        } catch (error) {
+                            console.log(error)
+                            await reply.edit({ content: `Something went horribly wrong:\nERROR: ${error}` })
+                        }
+                    }
+                })
 
                 const actionRow = new ActionRowBuilder<ButtonBuilder>()
-                    .addComponents(hideEmbedButton)
+                    .addComponents(hideEmbedButton.button)
 
                 const reply = await submit.reply({ embeds: [codeBlockReplyEmbed], components: [actionRow] })
 
