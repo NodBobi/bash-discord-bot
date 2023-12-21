@@ -51,7 +51,6 @@ export = {
 
                     await interaction.update({ components: [updatedActionRow] })
                     await channel.setArchived(true)
-                    await channel.setLocked(true)
                     await channel.send(":card_box: This forum post has been archived, as the owner marked it as solved.")
                 }
             })
