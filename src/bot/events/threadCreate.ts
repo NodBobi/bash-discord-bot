@@ -6,24 +6,24 @@ export = {
     type: Events.ThreadCreate,
     once: false,
     async execute(client: Client, args: any) {
-        const [channel]: [ThreadChannel] = args
+        const [ channel ]: [ ThreadChannel ] = args
         // Check if the channel is thread and that the parentID is the forum channel id
         if (channel.isThread() && channel.parentId === "1187300552393113641") {
             try {
-                const rawData = await fetch(`https://api.stackexchange.com/2.3/search/advanced?order=desc&sort=relevance&site=stackoverflow&q=${channel.name}`)
+                const searchQuery = channel.name
+                const rawData = await fetch(`https://api.stackexchange.com/2.3/search/advanced?order=desc&sort=relevance&site=stackoverflow&q=${searchQuery}`)
                 const { items } = await rawData.json()
 
                 // If there's no items (stackoverflow questions) found, return out of the if condition
-                if (!items.length) throw `No stackoverflow matches found for query "${channel.name}"`;
+                if (!items.length) throw `No relevant stackoverflow question matches found for query "${searchQuery}"`;
 
-                const textData = items.slice(0, 5).map((data: any, idx: number) => {
+                const relevantStackoverflowQuestions = items.slice(0, 5).map((data: any, idx: number) => {
                     return `${idx + 1}: [${data.title}](${data.link})`
                 }).join("\n")
-                const message = `${textData}`
 
                 const embed = new DiscordEmbed(client).embed
                     .setTitle("These resources might be handy:")
-                    .setDescription(textData)
+                    .setDescription(relevantStackoverflowQuestions)
                     .setColor("Orange")
                     .setThumbnail("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ficonape.com%2Fwp-content%2Fpng_logo_vector%2Fstack-overflow-icon.png&f=1&nofb=1&ipt=b9890fdbd3c05f6062e8435341bbd3918f4215d77bed0f9773f806a581ca064b&ipo=images")
 
