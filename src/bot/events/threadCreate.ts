@@ -7,6 +7,7 @@ export = {
     once: false,
     async execute(client: Client, args: any) {
         const [ channel ]: [ ThreadChannel ] = args
+        
         // Check if the channel is thread and that the parentID is the forum channel id
         if (channel.isThread() && channel.parentId === "1187300552393113641") {
             try {
@@ -14,7 +15,7 @@ export = {
                 const rawData = await fetch(`https://api.stackexchange.com/2.3/search/advanced?order=desc&sort=relevance&site=stackoverflow&q=${searchQuery}`)
                 const { items } = await rawData.json()
 
-                // If there's no items (stackoverflow questions) found, return out of the if condition
+                // If there's no items (stackoverflow questions) found, throw to get out of the if condition
                 if (!items.length) throw `No relevant stackoverflow question matches found for query "${searchQuery}"`;
 
                 const relevantStackoverflowQuestions = items.slice(0, 5).map((data: any, idx: number) => {

@@ -35,12 +35,19 @@ client.log = new Logger({})
 // Add client version to the client instance
 client.version = pkg.version
 
-// Add a map for each button to the client instance
-client.buttons = new Map()
-
-// Add a .commands property to the client instance
+/*
+Add a .commands property to the client instance which holds all the bots commands
+and their corresponding command handlers.
+*/
 client.commands = new Collection()
 let allCommands: string[] = []
+
+/* 
+Add a map which will hold each buttons custom ids and their corresponding
+ButtonBuilder object (holds the button data such as style, button label, etc.) 
+and onInteraction function which will be fired on button click.
+*/
+client.buttons = new Map()
 
 const commandCategoriesPath = path.join(__dirname, "commands")
 const commandCategories = fs.readdirSync(commandCategoriesPath)
