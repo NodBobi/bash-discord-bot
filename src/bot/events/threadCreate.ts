@@ -33,26 +33,37 @@ export = {
                 client.log.error(error)
             }
 
+            const deleteThreadButton = new Button(client, {
+                id: "thread_delete_button",
+                style: ButtonStyle.Danger,
+                text: "Delete thread",
+                onInteraction: async function (client: Client, interaction: ButtonInteraction) {
+                    if(interaction.user.id !== channel.ownerId || !interaction.memberPermissions?.has("ManageChannels")) return;
+                    await channel.delete("Channel was archived and deleted after.")
+                }
+            })
+
             const archiveThreadButton = new Button(client, {
                 id: "thread_archive_button",
                 style: ButtonStyle.Success,
                 text: "Mark as solved",
                 onInteraction: async function (client: Client, interaction: ButtonInteraction) {
-                    if (interaction.user.id !== channel.ownerId) return;
+                    if (interaction.user.id !== channel.ownerId || !interaction.memberPermissions?.has("ManageChannels")) return;
 
                     /* 
-                    When the user interacts with the button, it will change the thread name to <previous name> + (solved)
+                    When the user interacts with the button, it will change the thread name to [ARCHIVED] + <current name>
                     and the button text will be changed to "Thread has been solved"
                     */
-                    await channel.setName(`${channel.name} (solved)`)
-                    console.log(channel.appliedTags)
+                    await channel.setName(`[ARCHIVED] ${channel.name}`)
                     const setDisabledButton = client.buttons.get(interaction.customId)?.button.setDisabled(true).setLabel("Thread has been solved")!
                     const updatedActionRow = new ActionRowBuilder<ButtonBuilder>()
                         .setComponents(setDisabledButton)
 
                     await interaction.update({ components: [updatedActionRow] })
                     await channel.setArchived(true)
-                    await channel.send(":card_box: This forum post has been archived, as the owner marked it as solved.")
+                    
+                    const archiveThreadMessageActionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(deleteThreadButton.button)
+                    await channel.send({ content: ":card_box: This thread has been archived, as it's been solved.", components: [archiveThreadMessageActionRow] })
                 }
             })
 
