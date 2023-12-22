@@ -1,4 +1,4 @@
-import { Events, Client, Interaction, ButtonInteraction } from "discord.js";
+import { Events, Client, Interaction } from "discord.js";
 
 export = {
     type: Events.InteractionCreate,

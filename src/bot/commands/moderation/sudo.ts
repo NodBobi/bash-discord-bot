@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, Client, ButtonBuilder, ButtonStyle, ActionRowBuilder, ButtonInteraction, DiscordAPIError } from "discord.js";
+import { SlashCommandBuilder, ChatInputCommandInteraction, Client, ButtonBuilder, ButtonStyle, ActionRowBuilder, ButtonInteraction } from "discord.js";
 import { DiscordEmbed } from "../../../utils/classes/DiscordEmbed";
 import { Button } from "../../../utils/classes/Button";
 

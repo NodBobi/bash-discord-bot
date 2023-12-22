@@ -9,8 +9,7 @@ import * as dotenv from 'dotenv';
 import fs from 'node:fs'
 import path from 'node:path'
 import pkg from '../../package.json'
-import { Logger, IConstructorOptions } from '../utils/logger'
-import { DiscordEmbed } from '../utils/classes/DiscordEmbed';
+import { Logger } from '../utils/logger'
 import { Button } from '../utils/classes/Button';
 
 dotenv.config({ path: "/home/luukas/Code/Projects/bash-bot/.env" })

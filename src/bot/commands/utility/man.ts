@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, Client, ChatInputCommandInteraction, EmbedBuilder, SlashCommandSubcommandBuilder, EmbedField, Options } from "discord.js";
+import { SlashCommandBuilder, Client, ChatInputCommandInteraction, SlashCommandSubcommandBuilder, EmbedField, Options } from "discord.js";
 import { DiscordEmbed } from "../../../utils/classes/DiscordEmbed";
 
 const applicationCommandOptionTypes: any = {
