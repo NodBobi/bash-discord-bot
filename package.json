@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "echo \"Compiling the source code...\" && tsc --watch && echo \"Starting the bot...\" && node dist/bot/index.js",
+    "build": "tsc --pretty",
     "start": "echo \"Compiling the source code...\" && tsc --pretty && echo \"Starting the bot...\" && node dist/bot/index.js"
   },
   "repository": {
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@types/node": "^20.10.5",
     "@types/ping": "^0.4.4",
-    "discord-api-types": "^0.37.66"
+    "discord-api-types": "^0.37.66",
+    "typescript": "^5.3.3"
   }
 }

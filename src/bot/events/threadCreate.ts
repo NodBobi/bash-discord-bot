@@ -9,7 +9,7 @@ export = {
         const [ channel ]: [ ThreadChannel ] = args
 
         // Check if the channel is thread and that the parentID is the forum channel id
-        if (channel.isThread() && channel.parentId === "1187300552393113641") {
+        if (channel.isThread() && channel.parentId === client.serverConfig.channels.get("help-forum-category")) {
             try {
                 const searchQuery = channel.name
                 const rawData = await fetch(`https://api.stackexchange.com/2.3/search/advanced?order=desc&sort=relevance&site=stackoverflow&q=${searchQuery}`)
@@ -60,10 +60,11 @@ export = {
                         .setComponents(setDisabledButton)
 
                     await interaction.update({ components: [updatedActionRow] })
-                    await channel.setArchived(true)
-                    
+
                     const archiveThreadMessageActionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(deleteThreadButton.button)
                     await channel.send({ content: ":card_box: This thread has been archived, as it's been solved.", components: [archiveThreadMessageActionRow] })
+
+                    await channel.setArchived(true)
                 }
             })
 

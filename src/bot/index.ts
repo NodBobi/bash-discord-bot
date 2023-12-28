@@ -20,8 +20,11 @@ declare module "discord.js" {
         commands: Collection<string, any>
         categories: String[]
         log: Logger
-        version: string,
+        version: string
         buttons: Map<string, Button>
+        serverConfig: {
+            channels: Map<string, string>
+        }
     }
 }
 
@@ -47,6 +50,18 @@ ButtonBuilder object (holds the button data such as style, button label, etc.)
 and onInteraction function which will be fired on button click.
 */
 client.buttons = new Map()
+
+/*
+Add a server config property to the client instace which holds configuration of
+the server the bot is in. 
+*/
+
+// Fix the any type below someday:D
+const defaultChannelConfig: any[] = [["help-forum-category", "1187300552393113641"]] 
+
+client.serverConfig = {
+    channels: new Map(defaultChannelConfig)
+}
 
 const commandCategoriesPath = path.join(__dirname, "commands")
 const commandCategories = fs.readdirSync(commandCategoriesPath)
