@@ -17,7 +17,7 @@ export = {
                         .addChoices(
                             { name: "Ban", value: "sudo_mod_ban" },
                             { name: "Kick", value: "sudo_mod_kick" },
-                            { name: "Mute", value: "sudo_mode_mute" }
+                            { name: "Mute", value: "sudo_mod_mute" }
                         )
                         .setRequired(true)
                 )
@@ -33,7 +33,6 @@ export = {
                         .setDescription("Additional flags to use")
                 )
         ),
-
     permissions: ["BAN_MEMBERS", "KICK_MEMBERS", "MUTE_MEMBERS"],
 
     validFlags: [
